@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海克斯大乱斗助手 - 英雄与强化符文胜率矩阵</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="logo-box">
+        <span class="logo-icon">🔮</span>
+        <div>
+          <h1>HEXA LAB</h1>
+          <p class="subtitle">海克斯大乱斗 Patch 16.14 权威数据站</p>
+        </div>
+      </div>
+      <div class="header-badge">官方 ARAM 真实比赛数据库</div>
+    </header>
+
+    <div class="main-layout">
+      <!-- Left Sidebar: Hero Search & List -->
+      <aside class="hero-sidebar">
+        <div class="search-box-wrapper">
+          <div class="search-input-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="heroSearchInput" placeholder="搜索英雄名 / 拼音 / 别名 (如 男枪, TF, 劲夫)..." autocomplete="off">
+          </div>
+          <!-- Autocomplete Suggestions Dropdown -->
+          <div id="autocompleteDropdown" class="autocomplete-dropdown hidden"></div>
+        </div>
+
+        <div class="hero-list" id="heroList">
+          <div class="loading-spinner">正在初始化英雄数据库...</div>
+        </div>
+      </aside>
+
+      <!-- Right Main Panel: Hero Details & Data Tables -->
+      <main class="content-panel">
+        <!-- Selected Hero Summary Banner -->
+        <div class="hero-summary-card" id="heroSummaryCard">
+          <div class="hero-card-left">
+            <h2 id="heroName" class="hero-title">请选择或搜索英雄</h2>
+            <div id="heroTags" class="hero-tags"></div>
+          </div>
+          <div class="hero-card-right">
+            <div class="stat-box">
+              <span class="stat-label">英雄基准胜率</span>
+              <span id="baseWinRate" class="stat-val gold-text">--%</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">全网比赛场次</span>
+              <span id="baseSample" class="stat-val">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Controls Toolbar -->
+        <div class="controls-toolbar">
+          <div class="tier-filter-group">
+            <span class="filter-label">海克斯位阶：</span>
+            <button class="tier-btn active" data-tier="all">全部等阶</button>
+            <button class="tier-btn prismatic" data-tier="棱彩阶">💎 棱彩阶 (彩卡)</button>
+            <button class="tier-btn gold" data-tier="黄金阶">🥇 黄金阶 (金卡)</button>
+            <button class="tier-btn silver" data-tier="白银阶">🥈 白银阶 (银卡)</button>
+          </div>
+
+          <div class="slider-group">
+            <label for="sampleThreshold">最低比赛样本: <span id="sampleValue" class="gold-text">> 500 场</span></label>
+            <input type="range" id="sampleThreshold" min="0" max="10000" step="100" value="500">
+          </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="tabs-header">
+          <button class="tab-btn active" id="tabAugmentsBtn">✨ 适配海克斯胜率榜</button>
+          <button class="tab-btn" id="tabItemsBtn">🛡️ 推荐出装胜率榜</button>
+        </div>
+
+        <!-- Panel 1: Augments Table -->
+        <div class="tab-panel active" id="panelAugments">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th width="60">排名</th>
+                  <th>海克斯符文</th>
+                  <th width="90">等阶位阶</th>
+                  <th width="100">HexScore</th>
+                  <th width="100">组合胜率</th>
+                  <th width="120">胜率增益 (ΔWR)</th>
+                  <th width="180">S1-S4 阶段胜率排名趋势</th>
+                  <th width="120">比赛样本</th>
+                </tr>
+              </thead>
+              <tbody id="augmentsTbody">
+                <tr><td colspan="8" class="empty-msg">请在左侧选择英雄进行查询</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel 2: Items Table -->
+        <div class="tab-panel" id="panelItems">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th width="60">排名</th>
+                  <th>装备名称</th>
+                  <th width="100">HexScore</th>
+                  <th width="100">出装胜率</th>
+                  <th width="120">胜率增益 (ΔWR)</th>
+                  <th width="140">比赛样本</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTbody">
+                <tr><td colspan="6" class="empty-msg">请在左侧选择英雄进行查询</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
