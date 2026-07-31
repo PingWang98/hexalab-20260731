@@ -1,34 +1,23 @@
-# 🔮 HEXA LAB - 海克斯大乱斗 Patch 16.14 权威数据站 (GitHub Pages 静态网页)
+# 🔮 HEXA LAB - 海克斯大乱斗 Patch 16.14 权威数据站
 
-基于英雄联盟 2026 最新版本 **Hexdata 官方真实比赛数据库** 构建的无后端纯静态网页工具。
-
-## 🌟 核心特性
-- **全量英雄与海克斯覆盖**：包含 173 位英雄、206 种强化符文与全套推荐装备。
-- **支持常用别名搜索**：支持 `寒冰`、`男枪`、`劲夫`、`TF`、`大嘴`、`奶妈`、`狗头`、`老鼠`、`猫咪` 等全网别名实时联想搜索。
-- **S1-S4 阶段胜率排名折线图**：自带 SVG 矢量折线图展示阶段胜率走势。
-- **零后端依赖**：直接发布至 **GitHub Pages** 即可在线免登录访问。
+基于英雄联盟 2026 最新版本 **Hexdata 官方真实比赛数据库** 构建的海克斯大乱斗助手。
 
 ---
 
-## 🚀 部署到 GitHub Pages 指南 (3 步开启免费在线网站)
+## ⚡ 1 秒极速体验
 
-### 方法 1：在 GitHub 网页拖拽上传 (最简单)
-1. 在 GitHub 创建一个新仓库，命名为 `hexalab-aram`；
-2. 将本目录下的所有文件 (`index.html`, `style.css`, `app.js`, `all_heroes_data.json`, `.nojekyll`) 拖拽上传至仓库 `main` 分支；
-3. 进入仓库 **Settings -> Pages**：
-   - **Branch**: 选择 `main` / `/(root)`
-   - 点击 **Save** 保存；
-4. 等待 1 分钟后，即可通过 `https://<您的GitHub用户名>.github.io/hexalab-aram/` 访问免费网页！
+### 1. 🌐 在线网页版 (免安装直达)
+👉 **[https://pingwang98.github.io/hexalab-20260731/](https://pingwang98.github.io/hexalab-20260731/)**
+
+### 2. 💻 Windows 独立桌面软件 (.exe 独立绿色版)
+无需安装任何环境，双击即开独立桌面窗口！
+👉 **[点击直接下载 HexaLab_海克斯大乱斗助手.exe (10.6 MB)](https://github.com/PingWang98/hexalab-20260731/raw/main/HexaLab_%E6%B5%B7%E5%85%8B%E6%96%AF%E5%A4%A7%E4%B9%B1%E6%96%97%E5%8A%A9%E6%89%8B.exe)**
 
 ---
 
-### 方法 2：使用 Git 命令行推送到 GitHub
-```bash
-git init
-git add .
-git commit -m "Deploy HEXA LAB to GitHub Pages"
-git branch -M main
-git remote add origin https://github.com/<您的GitHub用户名>/hexalab-aram.git
-git push -u origin main
-```
-在 GitHub 仓库的 **Settings -> Pages** 选择 `main` 分支部署即可！
+## 🌟 核心功能亮点
+- **全量 173 位英雄与 206 种强化符文**：全网首发无删减 Hexdata 比赛数据。
+- **全网别名极速联想搜索**：支持 `寒冰`、`男枪`、`劲夫`、`TF`、`大嘴`、`奶妈`、`狗头`、`老鼠`、`猫咪`、`亚索`、`永恩`、`瑞兹`、`安妮`、`小炮`、`赵信`、`劫`、`刀妹`、`发条`、`火男`、`妖姬`、`小丑` 等全网别名。
+- **等阶位阶切换自动切页**：点击 💎 棱彩阶 / 🥇 黄金阶 / 🥈 白银阶 自动切回海克斯胜率榜。
+- **S1-S4 阶段胜率排名 SVG 趋势折线图**：直观折线展现全阶段胜率走势。
+- **大差异智能提醒**：仅在前后阶段排名相差 $\ge 20$ 名时显现 `⚡ 前期压制` / `⌛ 后期战神`！
