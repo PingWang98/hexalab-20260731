@@ -1,23 +1,52 @@
-# 🔮 HEXA LAB - 海克斯大乱斗 Patch 16.14 权威数据站
+# 🔮 HEXA LAB
 
-基于英雄联盟 2026 最新版本 **Hexdata 官方真实比赛数据库** 构建的海克斯大乱斗助手。
+海克斯大乱斗英雄与海克斯胜率查询站。
 
----
+在线站点：[pingwang98.github.io/hexalab-20260731](https://pingwang98.github.io/hexalab-20260731/)
 
-## ⚡ 1 秒极速体验
+## 当前数据范围
 
-### 1. 🌐 在线网页版 (免安装直达)
-👉 **[https://pingwang98.github.io/hexalab-20260731/](https://pingwang98.github.io/hexalab-20260731/)**
+- 数据版本：Patch 16.17 / 数据版本 16.17.2。
+- 当前静态快照：胜率前 51 位英雄，按英雄基准胜率降序展示。
+- 未完成当前详情同步的英雄不会在网站中显示，避免新旧数据混用。
+- 页面只展示海克斯名称、等阶、组合胜率、相对英雄基准胜率的增益（ΔWR）和比赛样本。
 
-### 2. 💻 Windows 独立桌面软件 (.exe 独立绿色版)
-无需安装任何环境，双击即开独立桌面窗口！
-👉 **[点击直接下载 HexaLab_海克斯大乱斗助手.exe (10.6 MB)](https://github.com/PingWang98/hexalab-20260731/raw/main/HexaLab_%E6%B5%B7%E5%85%8B%E6%96%AF%E5%A4%A7%E4%B9%B1%E6%96%97%E5%8A%A9%E6%89%8B.exe)**
+## 数据获取方式
 
----
+数据来自 [ARAMGG 数据 API 文档](https://data.dtodo.cn/api/v1/zh-CN/docs/cf-data-api.md)。同步流程如下：
 
-## 🌟 核心功能亮点
-- **全量 173 位英雄与 206 种强化符文**：全网首发无删减 Hexdata 比赛数据。
-- **全网别名极速联想搜索**：支持 `寒冰`、`男枪`、`劲夫`、`TF`、`大嘴`、`奶妈`、`狗头`、`老鼠`、`猫咪`、`亚索`、`永恩`、`瑞兹`、`安妮`、`小炮`、`赵信`、`劫`、`刀妹`、`发条`、`火男`、`妖姬`、`小丑` 等全网别名。
-- **等阶位阶切换自动切页**：点击 💎 棱彩阶 / 🥇 黄金阶 / 🥈 白银阶 自动切回海克斯胜率榜。
-- **S1-S4 阶段胜率排名 SVG 趋势折线图**：直观折线展现全阶段胜率走势。
-- **大差异智能提醒**：仅在前后阶段排名相差 $\ge 20$ 名时显现 `⚡ 前期压制` / `⌛ 后期战神`！
+1. 请求 `champions.json`，读取全部英雄的当前基准胜率并按胜率降序排序。
+2. 对榜单中的英雄请求 `champions/{id}.json`，取得该英雄的海克斯组合统计。
+3. 将 API 的海克斯名称、稀有度、组合胜率与比赛样本写入 `latest_top_heroes.json`。
+4. `ΔWR` 在构建快照时计算：`海克斯组合胜率 − 该英雄基准胜率`。
+5. 浏览器只加载 `latest_top_heroes.json`；旧的 `all_heroes_data.json` 不会进入当前列表。
+
+`排名`是页面按 ΔWR 排序后的名次，并非 API 原始排名。页面已移除自定义 HexScore、装备推荐和 S1–S4 趋势，避免把非源字段当作统计数据。
+
+## 手动同步
+
+需要先在 ARAMGG 数据平台申请自己的 API Key。**请勿把 Key 写入脚本、JSON、README 或提交到 Git。**
+
+在 PowerShell 中通过临时环境变量运行：
+
+```powershell
+$env:ARAMGG_API_KEY = '替换为你自己的 API Key'
+.\sync_top_aramgg.ps1 -ApiKey $env:ARAMGG_API_KEY -TopCount 20
+```
+
+`sync_top_aramgg.ps1` 会从榜首开始重新生成指定数量英雄的快照。需要在已有快照基础上继续向后同步时，使用：
+
+```powershell
+.\sync_remaining_aramgg.ps1 -ApiKey $env:ARAMGG_API_KEY
+```
+
+该脚本会跳过已存在的英雄，按当前胜率继续请求；API 返回额度或速率限制时会停止，并保留成功写入的结果。额度规则和各接口消耗以 [官方 API 文档](https://data.dtodo.cn/api/v1/zh-CN/docs/cf-data-api.md) 为准。
+
+同步完成后，检查 `latest_top_heroes.json`，再提交并推送静态文件即可发布。
+
+## 仓库文件
+
+- `latest_top_heroes.json`：网站实际展示的当前数据快照。
+- `sync_top_aramgg.ps1`：从榜首生成一个指定数量的快照。
+- `sync_remaining_aramgg.ps1`：在已有快照后继续增量同步。
+- `all_heroes_data.json`：历史数据存档，不用于当前网站列表。
