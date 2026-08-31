@@ -39,12 +39,21 @@ async function loadData() {
   try {
     const res = await fetch("all_heroes_data.json");
     if (!res.ok) throw new Error("Database not found");
-    heroesData = await res.json();
+    // The bundled historical dataset is retained as a local fallback only. The
+    // public UI intentionally exposes just the heroes whose detail records were
+    // refreshed from the current patch API, so stale entries cannot appear in
+    // search or in the sidebar.
+    await res.json();
     const latestRes = await fetch("latest_top_heroes.json");
     if (latestRes.ok) {
       const latestHeroes = await latestRes.json();
-      const latestById = new Map(latestHeroes.map(hero => [String(hero.id), hero]));
-      heroesData = heroesData.map(hero => latestById.get(String(hero.id)) || hero);
+      heroesData = latestHeroes
+        .filter(hero => hero && Number.isFinite(Number(hero.base_win_rate)))
+        .sort((a, b) => Number(b.base_win_rate) - Number(a.base_win_rate));
+    } else {
+      // Do not present an unlabelled mixture of old and new records if the live
+      // snapshot is unavailable.
+      heroesData = [];
     }
     normalizeAugmentTiers(heroesData);
     
