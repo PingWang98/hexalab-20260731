@@ -128,17 +128,13 @@ function setupEventListeners() {
     }
   });
 
-  // 2. Tier Filter Buttons: Auto-switch to Augments Tab & Filter
+  // Tier filter buttons
   document.querySelectorAll(".tier-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tier-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentTierFilter = btn.dataset.tier;
       
-      // Auto-switch to Augments tab
-      const tabAugmentsBtn = document.getElementById("tabAugmentsBtn");
-      if (tabAugmentsBtn) tabAugmentsBtn.click();
-
       if (selectedHero) renderAugmentsTable();
     });
   });
@@ -151,28 +147,7 @@ function setupEventListeners() {
     sampleValLabel.textContent = `> ${minSampleFilter.toLocaleString()} 场`;
     if (selectedHero) {
       renderAugmentsTable();
-      renderItemsTable();
     }
-  });
-
-  // Tabs
-  const tabAugmentsBtn = document.getElementById("tabAugmentsBtn");
-  const tabItemsBtn = document.getElementById("tabItemsBtn");
-  const panelAugments = document.getElementById("panelAugments");
-  const panelItems = document.getElementById("panelItems");
-
-  tabAugmentsBtn.addEventListener("click", () => {
-    tabAugmentsBtn.classList.add("active");
-    tabItemsBtn.classList.remove("active");
-    panelAugments.classList.add("active");
-    panelItems.classList.remove("active");
-  });
-
-  tabItemsBtn.addEventListener("click", () => {
-    tabItemsBtn.classList.add("active");
-    tabAugmentsBtn.classList.remove("active");
-    panelItems.classList.add("active");
-    panelAugments.classList.remove("active");
   });
 }
 
@@ -216,72 +191,12 @@ function selectHero(hero) {
   `;
 
   renderAugmentsTable();
-  renderItemsTable();
-}
-
-// Generate SVG Sparkline Line Chart for S1-S4 stage rankings
-function generateSparklineSvg(stageRanks) {
-  if (!stageRanks || ![stageRanks.S1, stageRanks.S2, stageRanks.S3, stageRanks.S4].every(Number.isFinite)) {
-    return '<span class="stage-data-unavailable">暂无阶段数据</span>';
-  }
-  if (!stageRanks || Object.keys(stageRanks).length === 0) {
-    return '<span style="color:#94a3b8; font-size:11px;">--</span>';
-  }
-
-  const r1 = stageRanks.S1 || 50;
-  const r2 = stageRanks.S2 || 50;
-  const r3 = stageRanks.S3 || 50;
-  const r4 = stageRanks.S4 || 50;
-
-  const ranks = [r1, r2, r3, r4];
-  const maxR = Math.max(...ranks, 20);
-  const minR = Math.min(...ranks, 1);
-
-  const width = 130;
-  const height = 28;
-  const padding = 4;
-
-  // Map ranks to Y coordinates (rank 1 is top Y=padding, maxR is bottom Y=height-padding)
-  const getY = (rank) => {
-    if (maxR === minR) return height / 2;
-    const norm = (rank - minR) / (maxR - minR);
-    return padding + norm * (height - 2 * padding);
-  };
-
-  const points = [
-    { x: 10, y: getY(r1), rank: r1, label: 'S1' },
-    { x: 48, y: getY(r2), rank: r2, label: 'S2' },
-    { x: 84, y: getY(r3), rank: r3, label: 'S3' },
-    { x: 120, y: getY(r4), rank: r4, label: 'S4' }
-  ];
-
-  const pathD = `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y} L ${points[2].x} ${points[2].y} L ${points[3].x} ${points[3].y}`;
-  const strokeColor = (r1 <= r4) ? '#10b981' : '#f43f5e'; // Green if early better, Rose if scaling up
-
-  const dotsHtml = points.map(p => `
-    <circle cx="${p.x}" cy="${p.y}" r="3" fill="${strokeColor}" stroke="#0f172a" stroke-width="1">
-      <title>${p.label}: #${p.rank}</title>
-    </circle>
-  `).join('');
-
-  return `
-    <div class="sparkline-box" title="S1:#${r1} | S2:#${r2} | S3:#${r3} | S4:#${r4}">
-      <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        ${dotsHtml}
-      </svg>
-      <div class="sparkline-labels">
-        <span>S1:#${r1}</span>
-        <span>S4:#${r4}</span>
-      </div>
-    </div>
-  `;
 }
 
 function renderAugmentsTable() {
   const tbody = document.getElementById("augmentsTbody");
   if (!selectedHero || !selectedHero.augments) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">暂无海克斯数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">暂无海克斯数据</td></tr>';
     return;
   }
 
@@ -299,7 +214,7 @@ function renderAugmentsTable() {
   list.sort((a, b) => b.delta - a.delta);
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">在当前等阶/样本门槛(>${minSampleFilter}场)下无匹配数据</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">在当前等阶/样本门槛(>${minSampleFilter}场)下无匹配数据</td></tr>`;
     return;
   }
 
@@ -314,9 +229,6 @@ function renderAugmentsTable() {
       timingBadge = `<span class="timing-badge timing-${a.timing_class}">${a.timing_tag}</span>`;
     }
 
-    // 2. SVG Sparkline Line Chart for S1-S4 stage rankings
-    const sparklineHtml = generateSparklineSvg(a.stage_ranks);
-
     return `
       <tr>
         <td class="rank-cell">#${idx + 1}</td>
@@ -324,40 +236,7 @@ function renderAugmentsTable() {
         <td><span class="tier-tag ${a.tier}">${a.tier}</span></td>
         <td>${a.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
-        <td>${sparklineHtml}</td>
         <td>${a.sample.toLocaleString()} 场</td>
-      </tr>
-    `;
-  }).join('');
-}
-
-function renderItemsTable() {
-  const tbody = document.getElementById("itemsTbody");
-  if (!selectedHero || !selectedHero.items) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">暂无装备数据</td></tr>';
-    return;
-  }
-
-  let list = selectedHero.items.filter(i => i.sample >= minSampleFilter);
-  list.sort((a, b) => b.delta - a.delta);
-
-  if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">在当前样本门槛(>${minSampleFilter}场)下无匹配装备数据</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = list.map((item, idx) => {
-    const isPositive = item.delta >= 0;
-    const deltaStr = isPositive ? `+${item.delta.toFixed(1)}%` : `${item.delta.toFixed(1)}%`;
-    const deltaClass = isPositive ? 'positive' : 'negative';
-
-    return `
-      <tr>
-        <td class="rank-cell">#${idx + 1}</td>
-        <td class="name-cell">${item.name}</td>
-        <td>${item.win_rate}%</td>
-        <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
-        <td>${item.sample.toLocaleString()} 场</td>
       </tr>
     `;
   }).join('');
