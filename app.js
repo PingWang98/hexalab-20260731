@@ -281,7 +281,7 @@ function generateSparklineSvg(stageRanks) {
 function renderAugmentsTable() {
   const tbody = document.getElementById("augmentsTbody");
   if (!selectedHero || !selectedHero.augments) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty-msg">暂无海克斯数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-msg">暂无海克斯数据</td></tr>';
     return;
   }
 
@@ -299,7 +299,7 @@ function renderAugmentsTable() {
   list.sort((a, b) => b.delta - a.delta);
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="empty-msg">在当前等阶/样本门槛(>${minSampleFilter}场)下无匹配数据</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-msg">在当前等阶/样本门槛(>${minSampleFilter}场)下无匹配数据</td></tr>`;
     return;
   }
 
@@ -322,7 +322,6 @@ function renderAugmentsTable() {
         <td class="rank-cell">#${idx + 1}</td>
         <td class="name-cell">${a.name} ${timingBadge}</td>
         <td><span class="tier-tag ${a.tier}">${a.tier}</span></td>
-        <td><strong>${a.hexscore}</strong></td>
         <td>${a.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
         <td>${sparklineHtml}</td>
@@ -335,7 +334,7 @@ function renderAugmentsTable() {
 function renderItemsTable() {
   const tbody = document.getElementById("itemsTbody");
   if (!selectedHero || !selectedHero.items) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">暂无装备数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">暂无装备数据</td></tr>';
     return;
   }
 
@@ -343,7 +342,7 @@ function renderItemsTable() {
   list.sort((a, b) => b.delta - a.delta);
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">在当前样本门槛(>${minSampleFilter}场)下无匹配装备数据</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">在当前样本门槛(>${minSampleFilter}场)下无匹配装备数据</td></tr>`;
     return;
   }
 
@@ -356,7 +355,6 @@ function renderItemsTable() {
       <tr>
         <td class="rank-cell">#${idx + 1}</td>
         <td class="name-cell">${item.name}</td>
-        <td><strong>${item.hexscore}</strong></td>
         <td>${item.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
         <td>${item.sample.toLocaleString()} 场</td>
