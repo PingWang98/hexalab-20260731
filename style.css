@@ -535,6 +535,11 @@ body {
   font-size: 10px;
   color: #94a3b8;
 }
+
+.stage-data-unavailable {
+  color: var(--text-muted);
+  font-size: 12px;
+}
 .stage-pills {
   display: flex;
   gap: 4px;

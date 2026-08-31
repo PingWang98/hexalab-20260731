@@ -40,6 +40,12 @@ async function loadData() {
     const res = await fetch("all_heroes_data.json");
     if (!res.ok) throw new Error("Database not found");
     heroesData = await res.json();
+    const latestRes = await fetch("latest_top_heroes.json");
+    if (latestRes.ok) {
+      const latestHeroes = await latestRes.json();
+      const latestById = new Map(latestHeroes.map(hero => [String(hero.id), hero]));
+      heroesData = heroesData.map(hero => latestById.get(String(hero.id)) || hero);
+    }
     normalizeAugmentTiers(heroesData);
     
     renderHeroList(heroesData);
@@ -192,7 +198,7 @@ function selectHero(hero) {
   
   document.getElementById("heroName").textContent = hero.display_name || hero.name;
   document.getElementById("baseWinRate").textContent = `${hero.base_win_rate}%`;
-  document.getElementById("baseSample").textContent = hero.base_sample ? hero.base_sample.toLocaleString() : "100,000+";
+  document.getElementById("baseSample").textContent = hero.base_sample ? hero.base_sample.toLocaleString() : "官方未提供";
   
   const tagsContainer = document.getElementById("heroTags");
   tagsContainer.innerHTML = `
@@ -206,6 +212,9 @@ function selectHero(hero) {
 
 // Generate SVG Sparkline Line Chart for S1-S4 stage rankings
 function generateSparklineSvg(stageRanks) {
+  if (!stageRanks || ![stageRanks.S1, stageRanks.S2, stageRanks.S3, stageRanks.S4].every(Number.isFinite)) {
+    return '<span class="stage-data-unavailable">暂无阶段数据</span>';
+  }
   if (!stageRanks || Object.keys(stageRanks).length === 0) {
     return '<span style="color:#94a3b8; font-size:11px;">--</span>';
   }
