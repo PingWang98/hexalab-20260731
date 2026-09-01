@@ -15,10 +15,10 @@
         <span class="logo-icon">🔮</span>
         <div>
           <h1>HEXA LAB</h1>
-          <p class="subtitle">海克斯大乱斗 Patch 16.17 · 已同步英雄按胜率排序</p>
+          <p class="subtitle">海克斯大乱斗 Patch 16.17 · 全量 173 位英雄已同步</p>
         </div>
       </div>
-      <div class="header-badge">16.17.2 · 实时胜率榜详情</div>
+      <div class="header-badge">Patch 16.17 · 实时数据</div>
     </header>
 
     <div class="main-layout">
@@ -60,7 +60,7 @@
 
         <!-- Filter Controls Toolbar -->
         <div class="controls-toolbar">
-          <div class="tier-filter-group">
+          <div class="tier-filter-group" id="tierFilterGroup">
             <span class="filter-label">海克斯位阶：</span>
             <button class="tier-btn active" data-tier="all">全部等阶</button>
             <button class="tier-btn prismatic" data-tier="棱彩阶">💎 棱彩阶 (彩卡)</button>
@@ -74,7 +74,13 @@
           </div>
         </div>
 
-        <!-- Augments Table -->
+        <!-- Content Tabs -->
+        <div class="tabs-header">
+          <button class="tab-btn active" id="tabAugmentsBtn">✨ 适配海克斯胜率榜</button>
+          <button class="tab-btn" id="tabItemsBtn">🛡️ 推荐出装胜率榜</button>
+        </div>
+
+        <!-- Panel 1: Augments Table -->
         <div class="tab-panel active" id="panelAugments">
           <div class="table-responsive">
             <table class="data-table">
@@ -90,6 +96,26 @@
               </thead>
               <tbody id="augmentsTbody">
                 <tr><td colspan="6" class="empty-msg">请在左侧选择英雄进行查询</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel 2: Items Table -->
+        <div class="tab-panel" id="panelItems">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th width="80">ΔWR 排名</th>
+                  <th>核心装备</th>
+                  <th width="100">装备胜率</th>
+                  <th width="140">胜率增益 (ΔWR)</th>
+                  <th width="140">比赛样本</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTbody">
+                <tr><td colspan="5" class="empty-msg">请在左侧选择英雄进行查询</td></tr>
               </tbody>
             </table>
           </div>

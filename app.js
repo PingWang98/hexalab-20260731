@@ -37,13 +37,6 @@ async function loadData() {
   heroListContainer.innerHTML = '<div class="loading-spinner">正在读取海克斯数据库...</div>';
   
   try {
-    const res = await fetch("all_heroes_data.json");
-    if (!res.ok) throw new Error("Database not found");
-    // The bundled historical dataset is retained as a local fallback only. The
-    // public UI intentionally exposes just the heroes whose detail records were
-    // refreshed from the current patch API, so stale entries cannot appear in
-    // search or in the sidebar.
-    await res.json();
     const latestRes = await fetch("latest_top_heroes.json");
     if (latestRes.ok) {
       const latestHeroes = await latestRes.json();
@@ -147,8 +140,31 @@ function setupEventListeners() {
     sampleValLabel.textContent = `> ${minSampleFilter.toLocaleString()} 场`;
     if (selectedHero) {
       renderAugmentsTable();
+      renderItemsTable();
     }
   });
+
+  // Tab switcher
+  const tabAugmentsBtn = document.getElementById("tabAugmentsBtn");
+  const tabItemsBtn = document.getElementById("tabItemsBtn");
+  const panelAugments = document.getElementById("panelAugments");
+  const panelItems = document.getElementById("panelItems");
+
+  if (tabAugmentsBtn && tabItemsBtn) {
+    tabAugmentsBtn.addEventListener("click", () => {
+      tabAugmentsBtn.classList.add("active");
+      tabItemsBtn.classList.remove("active");
+      panelAugments.classList.add("active");
+      panelItems.classList.remove("active");
+    });
+
+    tabItemsBtn.addEventListener("click", () => {
+      tabItemsBtn.classList.add("active");
+      tabAugmentsBtn.classList.remove("active");
+      panelItems.classList.add("active");
+      panelAugments.classList.remove("active");
+    });
+  }
 }
 
 function renderHeroList(list) {
@@ -191,6 +207,7 @@ function selectHero(hero) {
   `;
 
   renderAugmentsTable();
+  renderItemsTable();
 }
 
 function renderAugmentsTable() {
@@ -237,6 +254,41 @@ function renderAugmentsTable() {
         <td>${a.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
         <td>${a.sample.toLocaleString()} 场</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+
+function renderItemsTable() {
+  const tbody = document.getElementById("itemsTbody");
+  if (!tbody) return;
+  if (!selectedHero || !selectedHero.items || selectedHero.items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">暂无装备数据</td></tr>';
+    return;
+  }
+
+  let list = selectedHero.items.filter(i => (i.sample || 0) >= minSampleFilter);
+  // Sort strictly by win rate gain delta descending, then winRate desc
+  list.sort((a, b) => (b.delta ?? 0) - (a.delta ?? 0) || (b.win_rate ?? 0) - (a.win_rate ?? 0));
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">在当前样本门槛(>${minSampleFilter}场)下无匹配装备数据</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map((item, idx) => {
+    const isPositive = item.delta >= 0;
+    const deltaStr = isPositive ? `+${item.delta.toFixed(1)}%` : `${item.delta.toFixed(1)}%`;
+    const deltaClass = isPositive ? 'positive' : 'negative';
+
+    return `
+      <tr>
+        <td class="rank-cell">#${idx + 1}</td>
+        <td class="name-cell">${item.name}</td>
+        <td>${item.win_rate}%</td>
+        <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
+        <td>${item.sample.toLocaleString()} 场</td>
       </tr>
     `;
   }).join('');
