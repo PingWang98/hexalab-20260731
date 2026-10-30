@@ -39,5 +39,5 @@ const output = Object.entries(heroes).map(([id, h]) => {
 }).sort ( (a, b) => b.base_win_rate - a.base_win_rate);
 if (!output.length || output.some(h => !h.augments.length)) throw new Error('Incomplete dataset');
 fs.writeFileSync(path.join(root, 'latest_top_heroes.json'), JSON.stringify(output));
-fs.writeFileSync(path.join(root, 'data_meta.json'), JSON.stringify({ patch: meta.patch || latest.path.split('/')[1], snapshot_at: meta.snapshot_at, window: meta.window, valid_matches: meta.matches.valid, hero_count: output.length, seq: latest.seq }, null, 2) + '\n');
+fs.writeFileSync(path.join(root, 'data_meta.json'), JSON.stringify({ patch: meta.patch || latest.path.split('/')[1], snapshot_at: meta.snapshot_at, window: meta.window, valid_matches: meta.matches.valid, hero_count: output.length, seq: latest.seq, augments: Object.entries(augments).map(([id, a]) => ({ id, name: a.name, tier: rarity[a.rarity] || '未知' })) }, null, 2) + '\n');
 console.log(`Synced ${output.length} heroes from ${latest.path}, seq ${latest.seq}`);

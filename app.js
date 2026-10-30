@@ -1,7 +1,8 @@
 let heroesData = [];
 let selectedHero = null;
 let currentTierFilter = "all";
-let minSampleFilter = 500;
+let minSampleFilter = 0;
+let augmentCatalog = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
@@ -27,6 +28,7 @@ async function loadData() {
     const metaRes = await fetch("data_meta.json");
     if (metaRes.ok) {
       const meta = await metaRes.json();
+      augmentCatalog = meta.augments || [];
       const date = value => value.slice(0, 16).replace("T", " ");
       document.getElementById("dataSubtitle").textContent = `国服常规 · ${meta.hero_count} 位英雄 · 样本 ${date(meta.window.start)} 至 ${date(meta.window.end_exclusive)}（北京时间）`;
       document.getElementById("dataBadge").textContent = `Patch ${meta.patch} · 截至 ${date(meta.snapshot_at)}`;
@@ -212,6 +214,11 @@ function renderAugmentsTable() {
   // Sort strictly by Win Rate Gain (delta) descending
   list.sort((a, b) => b.delta - a.delta);
 
+  const observedIds = new Set(selectedHero.augments.map(a => String(a.slug)));
+  const unobserved = augmentCatalog.filter(a => !observedIds.has(String(a.id)));
+  document.getElementById("augmentCounts").textContent = `本英雄有统计 ${selectedHero.augments.length} 种；当前筛选显示 ${list.length} 种；数据目录中另有 ${unobserved.length} 种未提供该英雄的统计。`;
+  document.getElementById("unobservedAugments").textContent = unobserved.map(a => `${a.name}（${a.tier}）`).join('、') || '无';
+
   if (list.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">在当前等阶/样本门槛(≥${minSampleFilter}场)下无匹配数据</td></tr>`;
     return;
@@ -231,7 +238,7 @@ function renderAugmentsTable() {
     return `
       <tr>
         <td class="rank-cell">#${idx + 1}</td>
-        <td class="name-cell">${a.name} ${timingBadge}</td>
+        <td class="name-cell">${a.name} ${a.low_sample ? '<span class="badge alias-badge">小样本</span>' : ''} ${timingBadge}</td>
         <td><span class="tier-tag ${a.tier}">${a.tier}</span></td>
         <td>${a.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
