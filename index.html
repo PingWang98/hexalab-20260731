@@ -29,9 +29,15 @@
         <label>当前海克斯<select id="rrCard" disabled></select></label>
         <label>剩余刷新机会<input id="rrCount" type="number" min="0" max="10" step="1" value="3"></label>
       </div>
-      <details><summary>排除本局已经出现的其他海克斯</summary><p>勾选已见过的同色海克斯，包括当前其他候选；当前海克斯会自动排除。</p><div id="rrSeen" class="reroll-seen"></div></details>
+      <h3>本局已出现 · 海克斯排除池</h3>
+      <p>出现过的海克斯不再参与预测。勾选已见过的项目（包括当前其他候选）；当前海克斯自动排除。切换颜色保留勾选，切换英雄清空。</p>
+      <button id="rrClear" type="button">清空手动排除</button>
+      <div id="rrSeen" class="reroll-seen"></div>
+      <p id="rrPoolInfo"></p>
       <div id="rrResult" class="reroll-result" role="status" aria-live="polite">正在加载刷新模型…</div>
       <p id="rrDetail"></p>
+      <p id="rrModelInfo"></p>
+      <details><summary>查看基础概率与排除后的刷新池</summary><p>基础概率是该英雄、同颜色、已知候选池中的单槽估计。排除后按剩余权重重新归一化；每次刷新继续移除已抽到的海克斯。</p><div class="table-responsive"><table class="data-table"><thead><tr><th>海克斯</th><th>基础估计</th><th>排除后估计</th><th>状态</th></tr></thead><tbody id="rrPoolTable"></tbody></table></div></details>
       <details><summary>“是／否”如何判断？</summary><p>“是”表示模型估计用完次数后，至少遇到一个更好海克斯的机会超过 50%；“否”表示未超过。不是一定能或一定不能。每次机会按刷新一个候选、保持同颜色、已出现的不重复计算。默认 3 次。</p><p>“更好”按平滑后的组合胜率衡量，不代表因果收益或特定出装适配。模型使用 16.21 热门前十（排除艾希）的前 5% 分段统计及探索性刷新权重；仅覆盖数据库有记录的组合，未知资格及特殊规则可能影响结果。</p></details>
     </section>
     <div class="main-layout">
