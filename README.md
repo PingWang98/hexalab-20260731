@@ -1,25 +1,19 @@
-# 🔮 HEXA LAB
+# HEXA LAB
 
-海克斯大乱斗英雄与海克斯/装备胜率查询站。
+海克斯大乱斗英雄与海克斯胜率查询站：[在线访问](https://pingwang98.github.io/hexalab-20260731/)。
 
-在线站点：[pingwang98.github.io/hexalab-20260731](https://pingwang98.github.io/hexalab-20260731/)
+当前数据来自 [AramHex 数据](https://github.com/czgreat/aramhex-data) 的国服常规规则，版本、样本时间及快照时间显示在页面顶部。只包含采集到的对局；海克斯胜率按结算时持有统计，胜率差是与英雄基准胜率的差值，不能解释为因果收益。小样本结果波动较大。当前数据源不提供装备统计。
 
-## 当前数据范围
+数据许可：[CC BY-NC 4.0](https://github.com/czgreat/aramhex-data/blob/main/LICENSE)，需署名，禁止商业用途。
 
-- **游戏版本**：Patch 16.17（数据日期 2026-08-29）。
-- **覆盖规模**：全量 173 位英雄，按英雄基准胜率降序展示。
-- **页面榜单**：
-  1. ✨ **适配海克斯胜率榜**：展示各海克斯符文等阶（棱彩/黄金/白银）、组合胜率、胜率增益（ΔWR）、比赛样本以及前期/后期时机标记。
-  2. 🛡️ **推荐出装胜率榜**：展示各英雄核心出装表现、装备胜率、ΔWR 增益及比赛样本。
-- **交互与筛选**：支持按英雄名/拼音/别名即时搜索、海克斯等阶分类筛选、比赛样本量滑块阈值过滤。
+## 更新数据
 
-## 数据同步
-
-本项目数据源自 Hexdata 平台：
+在项目同级目录克隆或更新数据仓库，然后运行：
 
 ```bash
-# 执行全量英雄数据同步（全量 173 位英雄及各英雄海克斯、装备详情）
-node sync_hexdata.mjs
+git clone https://github.com/czgreat/aramhex-data.git
+cd hexalab-20260731
+node sync_aramhex.mjs ../aramhex-data
 ```
 
-脚本将自动抓取并生成 UTF-8 编码的 `latest_top_heroes.json`。提交并推送至 Git 仓库即可触发 GitHub Pages 自动部署。
+已有数据仓库时先在该仓库执行 `git pull`。脚本读取 `latest.json` 指向的最新常规数据，校验 SHA-256，并生成 `latest_top_heroes.json` 和 `data_meta.json`。提交并推送网站仓库后由 GitHub Pages 发布。

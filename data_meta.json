@@ -1,0 +1,13 @@
+{
+  "patch": "16.21",
+  "snapshot_at": "2026-10-28T12:28:35.908470+08:00",
+  "window": {
+    "end_exclusive": "2026-10-28T11:00:00+08:00",
+    "periods": null,
+    "start": "2026-10-24T00:00:00+08:00",
+    "time_field": "对局创建时间（北京时间）"
+  },
+  "valid_matches": 22552455,
+  "hero_count": 173,
+  "seq": 10
+}

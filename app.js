@@ -3,30 +3,6 @@ let selectedHero = null;
 let currentTierFilter = "all";
 let minSampleFilter = 500;
 
-// ARAM Mayhem augment rarity is keyed by the stable augment ID (`slug` in our
-// dataset).  Keep it separate from performance data: rarity can change between
-// patches while the historical win-rate sample remains useful.
-const AUGMENT_TIER_BY_SLUG = Object.freeze((() => {
-  const tiers = {
-    "棱彩阶": [1001, 1004, 1006, 1011, 1015, 1018, 1019, 1027, 1030, 1041, 1045, 1048, 1053, 1054, 1058, 1062, 1079, 1081, 1088, 1095, 1115, 1134, 1154, 1156, 1194, 1195, 1220, 1225, 1243, 1323, 1324, 1325, 1329, 1331, 1332, 1335, 1337, 1344, 1349, 1361, 1379, 1388, 1389, 1392, 1402, 1413, 1421, 2004, 2005, 2006, 2010, 2031, 2046, 2054, 2055, 2062, 2063, 2072, 2087, 2095, 2098, 2099, 2104, 2107, 2115, 2118, 2123, 2134, 2135, 2141, 12317],
-    "黄金阶": [1002, 1005, 1013, 1020, 1029, 1036, 1038, 1047, 1061, 1063, 1067, 1068, 1071, 1072, 1074, 1077, 1084, 1092, 1098, 1103, 1104, 1113, 1116, 1118, 1129, 1133, 1141, 1149, 1150, 1151, 1152, 1180, 1211, 1238, 1301, 1311, 1322, 1326, 1328, 1336, 1345, 1353, 1356, 1358, 1373, 1375, 1384, 1390, 1401, 1403, 1420, 1996, 2032, 2034, 2042, 2043, 2064, 2065, 2077, 2078, 2080, 2082, 2083, 2089, 2091, 2096, 2100, 2102, 2103, 2111, 2116, 2119, 2128, 2129, 2132, 2133, 2137, 2139, 2140, 2143],
-    "白银阶": [1007, 1022, 1025, 1026, 1028, 1034, 1037, 1044, 1046, 1051, 1056, 1057, 1060, 1073, 1076, 1080, 1087, 1097, 1105, 1112, 1136, 1138, 1170, 1181, 1187, 1204, 1205, 1206, 1214, 1237, 1305, 1308, 1314, 1315, 1318, 1319, 1320, 1333, 1347, 1348, 1386, 1404, 1415, 1416, 2009, 2016, 2018, 2024, 2026, 2073, 2076, 2088, 2125, 2127, 2131, 2136, 2138, 2144, 2157],
-  };
-
-  return Object.fromEntries(
-    Object.entries(tiers).flatMap(([tier, ids]) => ids.map(id => [String(id), tier]))
-  );
-})());
-
-function normalizeAugmentTiers(heroes) {
-  heroes.forEach(hero => {
-    hero.augments?.forEach(augment => {
-      const tier = AUGMENT_TIER_BY_SLUG[String(augment.slug)];
-      if (tier) augment.tier = tier;
-    });
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
   setupEventListeners();
@@ -48,7 +24,13 @@ async function loadData() {
       // snapshot is unavailable.
       heroesData = [];
     }
-    normalizeAugmentTiers(heroesData);
+    const metaRes = await fetch("data_meta.json");
+    if (metaRes.ok) {
+      const meta = await metaRes.json();
+      const date = value => value.slice(0, 16).replace("T", " ");
+      document.getElementById("dataSubtitle").textContent = `国服常规 · ${meta.hero_count} 位英雄 · 样本 ${date(meta.window.start)} 至 ${date(meta.window.end_exclusive)}（北京时间）`;
+      document.getElementById("dataBadge").textContent = `Patch ${meta.patch} · 截至 ${date(meta.snapshot_at)}`;
+    }
     
     renderHeroList(heroesData);
     
@@ -96,7 +78,7 @@ function setupEventListeners() {
     dropdown.innerHTML = filtered.slice(0, 12).map(h => `
       <div class="autocomplete-item" data-slug="${h.slug}">
         <span class="autocomplete-hero-name">${h.display_name || h.name}</span>
-        ${h.tier ? `<span class="autocomplete-hero-alias">版本 ${h.tier} | 胜率 ${h.base_win_rate}%</span>` : ''}
+        <span class="autocomplete-hero-alias">胜率 ${h.base_win_rate}%</span>
       </div>
     `).join('');
 
@@ -137,7 +119,7 @@ function setupEventListeners() {
   const sampleValLabel = document.getElementById("sampleValue");
   sampleInput.addEventListener("input", (e) => {
     minSampleFilter = parseInt(e.target.value, 10);
-    sampleValLabel.textContent = `> ${minSampleFilter.toLocaleString()} 场`;
+    sampleValLabel.textContent = `≥ ${minSampleFilter.toLocaleString()} 场`;
     if (selectedHero) {
       renderAugmentsTable();
       renderItemsTable();
@@ -177,7 +159,7 @@ function renderHeroList(list) {
   container.innerHTML = list.map(h => `
     <div class="hero-item ${selectedHero && selectedHero.slug === h.slug ? 'active' : ''}" data-slug="${h.slug}">
       <span class="hero-item-name">${h.display_name || h.name}</span>
-      <span class="hero-item-tier">${h.tier || 'T1'} | ${h.base_win_rate}%</span>
+      <span class="hero-item-tier">胜率 ${h.base_win_rate}%</span>
     </div>
   `).join('');
 
@@ -202,7 +184,7 @@ function selectHero(hero) {
   
   const tagsContainer = document.getElementById("heroTags");
   tagsContainer.innerHTML = `
-    <span class="badge tier-badge">版本层级: ${hero.tier || 'T1'}</span>
+    <span class="badge tier-badge">胜率排名: #${hero.rank}</span>
     ${hero.search_aliases ? `<span class="badge alias-badge">常用名: ${hero.search_aliases}</span>` : ''}
   `;
 
@@ -231,7 +213,7 @@ function renderAugmentsTable() {
   list.sort((a, b) => b.delta - a.delta);
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">在当前等阶/样本门槛(>${minSampleFilter}场)下无匹配数据</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">在当前等阶/样本门槛(≥${minSampleFilter}场)下无匹配数据</td></tr>`;
     return;
   }
 
@@ -264,7 +246,7 @@ function renderItemsTable() {
   const tbody = document.getElementById("itemsTbody");
   if (!tbody) return;
   if (!selectedHero || !selectedHero.items || selectedHero.items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">暂无装备数据</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">当前数据源未提供装备统计</td></tr>';
     return;
   }
 
@@ -273,7 +255,7 @@ function renderItemsTable() {
   list.sort((a, b) => (b.delta ?? 0) - (a.delta ?? 0) || (b.win_rate ?? 0) - (a.win_rate ?? 0));
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">在当前样本门槛(>${minSampleFilter}场)下无匹配装备数据</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">在当前样本门槛(≥${minSampleFilter}场)下无匹配装备数据</td></tr>`;
     return;
   }
 
