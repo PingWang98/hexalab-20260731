@@ -22,10 +22,11 @@
     </header>
 
     <section class="reroll-box" aria-labelledby="rerollTitle">
-      <h2 id="rerollTitle">热门英雄 · 要不要刷新？</h2>
+      <h2 id="rerollTitle">英雄海克斯 · 要不要刷新？</h2>
+      <p id="rrCoverage">覆盖热门前十及全分段胜率超过 50% 的英雄（排除艾希）。</p>
       <p>选择当前准备保留的最佳海克斯，看看用完剩余刷新次数是否更有机会换到更好的。</p>
       <div class="reroll-fields">
-        <label>热门英雄<select id="rrHero" disabled></select></label>
+        <label>选择英雄（按出场热度排序）<select id="rrHero" disabled></select></label>
         <label>当前海克斯<select id="rrCard" disabled></select></label>
         <label>剩余刷新机会<input id="rrCount" type="number" min="0" max="10" step="1" value="3"></label>
       </div>
@@ -38,7 +39,7 @@
       <p id="rrDetail"></p>
       <p id="rrModelInfo"></p>
       <details><summary>查看基础概率与排除后的刷新池</summary><p>基础概率是该英雄、同颜色、已知候选池中的单槽估计。排除后按剩余权重重新归一化；每次刷新继续移除已抽到的海克斯。</p><div class="table-responsive"><table class="data-table"><thead><tr><th>海克斯</th><th>基础估计</th><th>排除后估计</th><th>状态</th></tr></thead><tbody id="rrPoolTable"></tbody></table></div></details>
-      <details><summary>“是／否”如何判断？</summary><p>“是”表示模型估计用完次数后，至少遇到一个更好海克斯的机会超过 50%；“否”表示未超过。不是一定能或一定不能。每次机会按刷新一个候选、保持同颜色、已出现的不重复计算。默认 3 次。</p><p>“更好”按平滑后的组合胜率衡量，不代表因果收益或特定出装适配。模型使用 16.21 热门前十（排除艾希）的前 5% 分段统计及探索性刷新权重；仅覆盖数据库有记录的组合，未知资格及特殊规则可能影响结果。</p></details>
+      <details><summary>“是／否”如何判断？</summary><p>“是”表示模型估计用完次数后，至少遇到一个更好海克斯的机会超过 50%；“否”表示未超过。不是一定能或一定不能。每次机会按刷新一个候选、保持同颜色、已出现的不重复计算。默认 3 次。</p><p>“更好”按平滑后的组合胜率衡量，不代表因果收益或特定出装适配。英雄范围为 16.21 全分段胜率严格超过 50% 的英雄，并保留热门前十，排除艾希。预测使用各英雄自己的前 5% 分段统计，共享九英雄拟合系数；新增英雄未逐一通过实测验证。仅覆盖数据库有记录的组合，未知资格及特殊规则可能影响结果。</p></details>
     </section>
     <div class="main-layout">
       <!-- Left Sidebar: Hero Search & List -->
