@@ -21,6 +21,19 @@
       <div class="header-badge" id="dataBadge">数据加载中…</div>
     </header>
 
+    <section class="reroll-box" aria-labelledby="rerollTitle">
+      <h2 id="rerollTitle">热门英雄 · 要不要刷新？</h2>
+      <p>选择当前准备保留的最佳海克斯，看看用完剩余刷新次数是否更有机会换到更好的。</p>
+      <div class="reroll-fields">
+        <label>热门英雄<select id="rrHero" disabled></select></label>
+        <label>当前海克斯<select id="rrCard" disabled></select></label>
+        <label>剩余刷新机会<input id="rrCount" type="number" min="0" max="10" step="1" value="3"></label>
+      </div>
+      <details><summary>排除本局已经出现的其他海克斯</summary><p>勾选已见过的同色海克斯，包括当前其他候选；当前海克斯会自动排除。</p><div id="rrSeen" class="reroll-seen"></div></details>
+      <div id="rrResult" class="reroll-result" role="status" aria-live="polite">正在加载刷新模型…</div>
+      <p id="rrDetail"></p>
+      <details><summary>“是／否”如何判断？</summary><p>“是”表示模型估计用完次数后，至少遇到一个更好海克斯的机会超过 50%；“否”表示未超过。不是一定能或一定不能。每次机会按刷新一个候选、保持同颜色、已出现的不重复计算。默认 3 次。</p><p>“更好”按平滑后的组合胜率衡量，不代表因果收益或特定出装适配。模型使用 16.21 热门前十（排除艾希）的前 5% 分段统计及探索性刷新权重；仅覆盖数据库有记录的组合，未知资格及特殊规则可能影响结果。</p></details>
+    </section>
     <div class="main-layout">
       <!-- Left Sidebar: Hero Search & List -->
       <aside class="hero-sidebar">
@@ -129,5 +142,6 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="reroll.js"></script>
 </body>
 </html>
