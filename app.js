@@ -30,7 +30,7 @@ async function loadData() {
       const meta = await metaRes.json();
       augmentCatalog = meta.augments || [];
       const date = value => value.slice(0, 16).replace("T", " ");
-      document.getElementById("dataSubtitle").textContent = `国服常规 · ${meta.hero_count} 位英雄 · 样本 ${date(meta.window.start)} 至 ${date(meta.window.end_exclusive)}（北京时间）`;
+      document.getElementById("dataSubtitle").textContent = `国服常规 · ${meta.hero_count} 位英雄 · 样本 ${date(meta.window.start)} 至 ${date(meta.window.end_exclusive)}（北京时间；${meta.window.time_field || '数据时间'}）`;
       document.getElementById("dataBadge").textContent = `Patch ${meta.patch} · 截至 ${date(meta.snapshot_at)}`;
     }
     
