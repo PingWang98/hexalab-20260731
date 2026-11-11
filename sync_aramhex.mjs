@@ -19,6 +19,9 @@ const heroes = load('heroes.json');
 const pairs = load('hero_augments.json');
 const augments = load('augments.json');
 const meta = load('meta.json');
+const itemStats = latest.files['hero_items.json'] ? load('hero_items.json') : {};
+const itemMeta = latest.files['item_metadata.json'] ? load('item_metadata.json') : {};
+const equipmentHeroes = latest.files['equipment_heroes.json'] ? load('equipment_heroes.json') : {};
 const old = read(path.join(root, 'all_heroes_data.json'));
 const previous = read(path.join(root, 'latest_top_heroes.json'));
 const lookup = new Map([...old, ...previous].map(h => [String(h.id), h]));
@@ -35,7 +38,13 @@ const output = Object.entries(heroes).map(([id, h]) => {
       if (!info || !rarity[info.rarity]) throw new Error(`Missing augment metadata: ${aid}`);
       return { slug: aid, name: info.name, tier: rarity[info.rarity], win_rate: round(stat.win_rate * 100),
         sample: stat.games, delta: round((stat.win_rate - h.win_rate) * 100), low_sample: stat.low_sample };
-    }), items: [] };
+    }), items: Object.entries(itemStats[id] || {}).map(([iid, stat]) => {
+      const item = itemMeta[iid];
+      const baseline = equipmentHeroes[id];
+      if (!item || !baseline) throw new Error(`Missing equipment metadata or baseline: ${id}/${iid}`);
+      return { slug: iid, name: item.name, win_rate: round(stat.win_rate * 100), sample: stat.games,
+        delta: round((stat.win_rate - baseline.win_rate) * 100), low_sample: stat.low_sample };
+    }) };
 }).sort ( (a, b) => b.base_win_rate - a.base_win_rate);
 if (!output.length || output.some(h => !h.augments.length)) throw new Error('Incomplete dataset');
 fs.writeFileSync(path.join(root, 'latest_top_heroes.json'), JSON.stringify(output));

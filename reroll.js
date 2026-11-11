@@ -78,7 +78,7 @@ if (typeof document !== 'undefined') (async () => {
     const data=await response.json();heroes=data.heroes;
     get('rrModelInfo').textContent=`基础权重采用${data.model.name}（${data.model.heroes} 英雄、${data.model.records} 条匹配统计），α=${data.model.alpha.toFixed(3)}，β=${data.model.beta.toFixed(3)}。权重=持有次数^α × exp[-β×(组合胜率−0.5)]。系数为留一拟合中位数；并非实测概率。新模型在旧验证集上误差增大，建议仅作参考。`;
     get('rrClear').addEventListener('click',()=>{seen.clear();updateSeen();});
-    get('rrCoverage').textContent=`已覆盖 ${heroes.length} 位英雄：${data.patch} 全体胜率超过 50%，并保留热门前十（排除艾希）。本期模型输入为${data.sample_band}样本；高分段数据未必可用。下拉框胜率不是刷新成功率。`;
+    get('rrCoverage').textContent=`已覆盖 ${heroes.length} 位英雄：${data.patch} 全体胜率超过 50%，并保留热门前十（排除艾希）。本期模型输入为${data.sample_band}样本。下拉框胜率不是刷新成功率。`;
     for(const h of heroes)heroSelect.append(new Option(`${h.name} · ${(h.win_rate*100).toFixed(2)}%${h.popular?' · 热门':''}`,h.id));
     heroSelect.disabled=false;cardSelects.forEach(el=>el.disabled=false);
     heroSelect.addEventListener('change',updateHero);cardSelects.forEach(el=>el.addEventListener('change',updateSeen));count.addEventListener('input',calculate);updateHero();
