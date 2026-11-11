@@ -201,7 +201,20 @@ function renderAugmentsTable() {
     return;
   }
 
-  let list = selectedHero.augments;
+  const traps = findTraps(selectedHero);
+  const trapIds = new Set(traps.map(a => String(a.slug)));
+  document.getElementById('trapList').replaceChildren();
+  if (!traps.length) {
+    document.getElementById('trapList').textContent = '当前没有达到筛选门槛的项目。';
+  } else {
+    for (const trap of traps) {
+      const entry = document.createElement('div');
+      entry.className = 'trap-entry';
+      entry.textContent = `${trap.name}（${trap.tier}） · 持有占比 ${(trap.holdingRate * 100).toFixed(2)}% · 胜率 ${trap.win_rate.toFixed(2)}% · 较基准 ${trap.delta.toFixed(2)} 个百分点 · ${trap.sample.toLocaleString()} 场`;
+      document.getElementById('trapList').append(entry);
+    }
+  }
+  let list = [...selectedHero.augments];
 
   // Filter by Tier (Prismatic / Gold / Silver)
   if (currentTierFilter !== "all") {
@@ -238,7 +251,7 @@ function renderAugmentsTable() {
     return `
       <tr>
         <td class="rank-cell">#${idx + 1}</td>
-        <td class="name-cell">${a.name} ${a.low_sample ? '<span class="badge alias-badge">小样本</span>' : ''} ${timingBadge}</td>
+        <td class="name-cell">${a.name} ${trapIds.has(String(a.slug)) ? '<span class="trap-badge">高频疑似陷阱</span>' : ''} ${a.low_sample ? '<span class="badge alias-badge">小样本</span>' : ''} ${timingBadge}</td>
         <td><span class="tier-tag ${a.tier}">${a.tier}</span></td>
         <td>${a.win_rate}%</td>
         <td><span class="delta-badge ${deltaClass}">${deltaStr}</span></td>
