@@ -6,6 +6,6 @@ function findTraps(hero) {
       a.sample >= 5000 && a.sample / hero.base_sample >= 0.03 && a.delta <= -3)
     .map(a => ({ ...a, holdingRate: a.sample / hero.base_sample }))
     .sort((a,b) => (b.holdingRate * -b.delta) - (a.holdingRate * -a.delta) || a.delta-b.delta || String(a.slug).localeCompare(String(b.slug)))
-    .slice(0,3);
+    .slice(0,5);
 }
 if (typeof module !== 'undefined') module.exports = { findTraps };
